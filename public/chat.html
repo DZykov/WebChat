@@ -1,25 +1,43 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
-        <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="css/style_chat.css" />
+        <title>ChatCord App</title>
     </head>
     <body>
-        <div class="row">
+        <div class="chat-container">
+            <header class="chat-header">
+                <h1>Web Chat</h1>
+                <h3>Room ID:</h3>
+                <h2 id="room-id"></h2>
+                <a id="leave-button" class="button">Leave Room</a>
+            </header>
+            <main class="chat-main">
+                <div class="chat-sidebar">
 
-            <div class="chat_panel" id="menuModel">
-                <p>Panel Chat</p>
-                <button id="addChatBtn">
-                    Add Chat
-                </button>
+                    <h3>Chanells:</h3>
+                    <ul id="chanells"></ul>
+
+                    <h3>Users:</h3>
+                    <ul id="users"></ul>
+
+                </div>
+                <div class="chat-messages"></div>
+            </main>
+            <div class="chat-form-container">
+                <form id="chat-form">
+                    <input
+                    id="msg"
+                    type="text"
+                    placeholder="Enter Message"
+                    required
+                    autocomplete="off"
+                    />
+                    <button>Send</button>
+                </form>
             </div>
-
-            <div class="window_chat" id="menuModel">
-                <p>Window chat</p>
-
-            </div>
-
         </div>
-        <script src="./index.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="js/main.js"></script>
     </body>
 </html>
-

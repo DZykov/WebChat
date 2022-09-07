@@ -1,9 +1,9 @@
 const startChatBtn = document.querySelector('#startChatBtn');
 const menuModel = document.querySelector('#menuModel');
-const room_id = document.querySelector('#room_id');
-const room_password = document.querySelector('#room_password');
-const user_name = document.querySelector('#user_name');
-const user_password = document.querySelector('#user_password');
+const room_id = document.querySelector('#room-id');
+const room_password = document.querySelector('#room-password');
+const user_name = document.querySelector('#user-name');
+const user_password = document.querySelector('#user-password');
 
 let room_id_value;
 let room_password_value;
