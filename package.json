@@ -1,0 +1,29 @@
+{
+  "name": "webchat",
+  "version": "1.0.0",
+  "description": "Realtime chat",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server/server.js",
+    "dev": "nodemon server/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DZykov/WebChat.git"
+  },
+  "author": "Demid Zykov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DZykov/WebChat/issues"
+  },
+  "homepage": "https://github.com/DZykov/WebChat#readme",
+  "dependencies": {
+    "express": "^4.18.1",
+    "moment": "^2.29.4",
+    "socket.io": "^4.5.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.19"
+  }
+}
