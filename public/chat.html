@@ -8,11 +8,24 @@
         <div class="chat-container">
             <header class="chat-header">
                 <h1>Web Chat</h1>
-                <a id="leave-button" class="button">Leave Room</a>
             </header>
+            <div class="chat-header">
+                <h2>Add/Remove room:</h2>
+                <input type="text" id="room-id-new">
+                <a id="leave-button" class="button">Leave Room</a>
+                <a id="leave-button" class="button">Add Room</a>
+            </div>
             <main class="chat-main">
                 <div class="chat-sidebar">
-
+                    
+                    <h3>Active rooms:</h3>
+                    <select class="button" id="rooms">
+                        <option value="volvo">Volvo</option>
+                        <option value="saab">Saab</option>
+                        <option value="mercedes">Mercedes</option>
+                        <option value="audi">Audi</option>
+                    </select>
+                    <br></br>
                     <h3>Room ID:</h3>
                     <h2 id="room-id"></h2>
 
