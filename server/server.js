@@ -1,12 +1,14 @@
 const path = require('path');
 const http = require('http');
 const express = require('express');
+const session = require('express-session');
 const { Server } = require('socket.io');
 const cors = require('cors');
+const mysql = require('mysql');
 
 const app = express();
 
-app.use(express.static(path.join("..", "public")));
+app.use(express.static(path.join("public")));
 app.use(cors());
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
@@ -31,9 +33,15 @@ const io = new Server(server, {
 });
 
 // POST GET
-app.get('/auth', function(request, response) {
+app.get('/', function(request, response) {
 	// Render login template
-	response.sendFile("index.html", { root: __dirname});
+	response.sendFile("index.html", { root: path.join("public")});
+    console.log('get req')
+});
+
+app.get('/chat', function(request, response) {
+	// Render login template
+	response.sendFile("chat.html", { root:  path.join("public")});
     console.log('get req')
 });
 
