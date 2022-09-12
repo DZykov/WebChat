@@ -57,7 +57,7 @@ app.get('/about', function(request, response) {
     console.log(response)
 });
 
-// Run when clinet connects to socket
+// Polling with socket
 io.on('connection', socket => {
     console.log("Connected")
     console.log(socket.id)
