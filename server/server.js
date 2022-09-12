@@ -19,7 +19,7 @@ app.use(function(req, res, next) {
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origins: ["*"],
+        origins: ["*"], // change for the front??? Do I have a server for front?
         methods: ["GET", "POST", "POLLING"],
       allowedHeaders: ["content-type"],
         handlePreflightrequest:(req, res) => {
@@ -36,13 +36,25 @@ const io = new Server(server, {
 app.get('/', function(request, response) {
 	// Render login template
 	response.sendFile("index.html", { root: path.join("public")});
-    console.log('get req')
+    console.log('login page')
+    console.log(request)
+    console.log(response)
 });
 
 app.get('/chat', function(request, response) {
-	// Render login template
+	// Render chat template
 	response.sendFile("chat.html", { root:  path.join("public")});
-    console.log('get req')
+    console.log('chat page')
+    console.log(request)
+    console.log(response)
+});
+
+app.get('/about', function(request, response) {
+	// Render login template
+	response.sendFile("about.html", { root:  path.join("public")});
+    console.log('about page')
+    console.log(request)
+    console.log(response)
 });
 
 // Run when clinet connects to socket
