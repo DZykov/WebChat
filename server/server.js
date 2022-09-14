@@ -5,9 +5,13 @@ const session = require('express-session');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const mysql = require('mysql');
+const bcrypt = require("bcrypt")
+require("dotenv").config();
 
 const app = express();
 
+// app itself
+app.use(express.json());
 app.use(express.static(path.join("public")));
 app.use(cors());
 app.use(function(req, res, next) {
@@ -32,6 +36,19 @@ const io = new Server(server, {
     }
 });
 
+// db
+const db = mysql.createPool({
+    connectionLimit: 100,
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: "mydb",
+    port: "3306" // port name, "3306" by default
+ });
+ 
+ db.getConnection( (err, connection)=> {   if (err) throw (err)
+    console.log ("DB connected successful: " + connection.threadId)})
+
 // POST GET
 app.get('/', function(request, response) {
 	// Render login template
@@ -39,6 +56,70 @@ app.get('/', function(request, response) {
     console.log('login page')
     console.log(request)
     console.log(response)
+});
+
+// create user
+async function create_user(req,res) {
+    const user = req.body.name;
+    const hashedPassword = await bcrypt.hash(req.body.password,10);
+    db.getConnection( async (err, connection) => { 
+        if (err) throw (err) 
+    const sqlSearch = 'SELECT * FROM users WHERE username = ?';
+    const search_query = mysql.format(sqlSearch,[user]);
+    const sqlInsert = 'INSERT INTO users VALUES (?,?)';
+    const insert_query = mysql.format(sqlInsert,[user, hashedPassword]);
+    
+    await connection.query (search_query, async (err, result) => {
+        if (err) throw (err)
+        console.log("------> Search Results")
+        console.log(result.length);
+        if (result.length != 0) {
+            connection.release();
+            console.log("------> User already exists");
+            res.sendStatus(409);
+        } else {
+            await connection.query (insert_query, (err, result)=> {
+                connection.release();
+                if (err) throw (err);
+                console.log ("--------> Created new User");
+                console.log(result.insertId);
+                res.sendStatus(201);
+            });
+        }
+        });
+    });
+}
+
+// login
+app.post("/login", (req, res)=> {
+    const user = req.body.name
+    const password = req.body.password
+    db.getConnection ( async (err, connection)=> { 
+        if (err) throw (err)
+        const sqlSearch = "Select * from users where username = ?";
+        const search_query = mysql.format(sqlSearch,[user]);
+        
+        await connection.query (search_query, async (err, result) => {
+            connection.release();
+            if (err) throw (err)
+            
+            if (result.length == 0) {
+                console.log("--------> User does not exist");
+                // create user
+                create_user(req, res);
+            } else {
+                const hashedPassword = result[0].password;
+         //get the hashedPassword from result    
+                if (await bcrypt.compare(password, hashedPassword)) {
+                    console.log("---------> Login Successful");
+                    res.send(`${user} is logged in!`);
+                } else {
+                    console.log("---------> Password Incorrect");
+                    res.send("Password incorrect!");
+                }
+            } 
+        });
+    });
 });
 
 app.get('/chat', function(request, response) {
@@ -63,9 +144,9 @@ io.on('connection', socket => {
     console.log(socket.id)
 });
 
-const PORT = 3000 || process.env.PORT
+const PORT = 3000 || process.env.PORT;
 
 
-server.listen(PORT, () =>
-    console.log(`Server is running on port ${PORT}`)
-);
+server.listen(process.env.PORT || 3000, () => {
+    console.log('Server is running!');
+});
