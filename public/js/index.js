@@ -19,16 +19,11 @@ startChatBtn.addEventListener('click', async _ => {
     user_name_value = user_name.value;
     user_password_value = user_password.value;
 
-    
-    console.log(user_name_value )
-    console.log(user_password_value )
-    let data = {name: user_name_value, password:user_password_value}
-    console.log(data)
+    let data = {name: user_name_value, password:user_password_value};
     const response = fetch('/login', {
           method: "POST",
           headers: {'Content-Type': 'application/json'}, 
           body: JSON.stringify(data)}).then(res => {
-            console.log("Request complete! response:", res);
+            //console.log("Request complete! response:", res);
     });
-    console.log('Completed!', response);
 });

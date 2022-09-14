@@ -133,9 +133,6 @@ app.get('/chat', function(request, response) {
 app.get('/about', function(request, response) {
 	// Render login template
 	response.sendFile("about.html", { root:  path.join("public")});
-    console.log('about page')
-    console.log(request)
-    console.log(response)
 });
 
 // Polling with socket
