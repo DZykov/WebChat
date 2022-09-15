@@ -6,7 +6,8 @@ const { Server } = require('socket.io');
 const cors = require('cors');
 const mysql = require('mysql');
 const bcrypt = require("bcrypt")
-require("dotenv").config();
+const jwt = require("jsonwebtoken")
+require("dotenv").config({path: `${__dirname}/.env`});
 
 const app = express();
 
@@ -83,7 +84,9 @@ async function create_user(req,res) {
                 if (err) throw (err);
                 console.log ("--------> Created new User");
                 console.log(result.insertId);
-                res.sendStatus(201);
+                const accessToken = generateAccessToken({user: req.body.name});
+                const refreshToken = generateRefreshToken({user: req.body.name});
+                res.json({accessToken: accessToken, refreshToken: refreshToken});
             });
         }
         });
@@ -92,8 +95,14 @@ async function create_user(req,res) {
 
 // login
 app.post("/login", (req, res)=> {
-    const user = req.body.name
-    const password = req.body.password
+    const user = req.body.name;
+    const password = req.body.password;
+    if(password.length==0){
+        const accessToken = generateAccessToken({user: req.body.name});
+        const refreshToken = generateRefreshToken({user: req.body.name});
+        res.json({accessToken: accessToken, refreshToken: refreshToken});
+        return;
+    }
     db.getConnection ( async (err, connection)=> { 
         if (err) throw (err)
         const sqlSearch = "Select * from users where username = ?";
@@ -109,10 +118,11 @@ app.post("/login", (req, res)=> {
                 create_user(req, res);
             } else {
                 const hashedPassword = result[0].password;
-         //get the hashedPassword from result    
                 if (await bcrypt.compare(password, hashedPassword)) {
                     console.log("---------> Login Successful");
-                    res.send(`${user} is logged in!`);
+                    const accessToken = generateAccessToken({user: req.body.name});
+                    const refreshToken = generateRefreshToken({user: req.body.name});
+                    res.json({accessToken: accessToken, refreshToken: refreshToken});
                 } else {
                     console.log("---------> Password Incorrect");
                     res.send("Password incorrect!");
@@ -122,13 +132,62 @@ app.post("/login", (req, res)=> {
     });
 });
 
-app.get('/chat', function(request, response) {
-	// Render chat template
-	response.sendFile("chat.html", { root:  path.join("public")});
-    console.log('chat page')
-    console.log(request)
-    console.log(response)
+// login tokens
+// accessToken
+function generateAccessToken(user) {
+    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: "15m"});
+}
+
+// refreshToken
+let refreshTokens = []; // change for redis or other dic server lib
+function generateRefreshToken(user) {
+    const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, {expiresIn: "20m"});
+    refreshTokens.push(refreshToken)
+    return refreshToken;
+}
+
+//refresh token
+app.post("/refreshToken", (req,res) => {
+    var accessToken = req.query.accessToken;
+    var refreshToken = req.query.refreshToken;
+    if (!refreshTokens.includes(refreshToken )) 
+        res.status(400).send("Refresh Token Invalid");
+    refreshTokens = refreshTokens.filter( (c) => c != refreshToken);
+    //remove the old refreshToken from the refreshTokens list
+    const n_accessToken = generateAccessToken ({user: req.body.name});
+    const n_refreshToken = generateRefreshToken ({user: req.body.name});
+    //generate new accessToken and refreshTokens
+    res.json({accessToken: n_accessToken, refreshToken: n_refreshToken});
 });
+
+app.delete("/logout", (req,res) => {
+    var accessToken = req.query.accessToken;
+    var refreshToken = req.query.refreshToken;
+    refreshTokens = refreshTokens.filter( (c) => c != refreshToken)
+    //remove the old refreshToken from the refreshTokens list
+    res.status(204).send("Logged out!")
+});
+
+app.get('/chat', (req, res) => {
+	// Render chat template
+    var accessToken = req.query.accessToken;
+    var refreshToken = req.query.refreshToken;
+    validateToken(req, res, accessToken);
+});
+
+function validateToken(req, res, token){
+    if (token == null){
+        res.status(400).send("Token not present");
+    } else {
+        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+            if (err) { 
+                res.status(403).send("Token is invalid");
+            } else {
+                res.sendFile("chat.html", { root:  path.join("public")});
+            }
+        });
+    }
+}
 
 app.get('/about', function(request, response) {
 	// Render login template
@@ -144,6 +203,6 @@ io.on('connection', socket => {
 const PORT = 3000 || process.env.PORT;
 
 
-server.listen(process.env.PORT || 3000, () => {
+server.listen(PORT, () => {
     console.log('Server is running!');
 });
