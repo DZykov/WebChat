@@ -209,6 +209,7 @@ io.on('connection', socket => {
                 socket.join(room_id_value);
                 socket.emit('get_response', 'Connected!');
                 socket.emit('add_room', room_id_value);
+                io.to(room_id_value).emit('receive_message', username+'joined room!')
             } else{
                 socket.emit('get_response', 'Wrong password!');
             }
@@ -218,9 +219,19 @@ io.on('connection', socket => {
             socket.emit('get_response', 'Room was created!');
             socket.emit('get_response', 'Connected!');
             socket.emit('add_room', room_id_value);
+            io.to(room_id_value).emit('receive_message', username+'joined room!')
         }
     });
 
+    socket.on('send_message', (room_id_value, username, msg) => {
+        var message = useranem+msg;
+        io.to(room_id_value).emit('receive_message', message);
+    });
+
+    socket.on('leave_room', (room_id_value, username) => {
+        socket.leave(room_id_value);
+        io.to(room_id_value).emit('receive_message', username+'left room!');
+    });
 });
 
 const PORT = 3000 || process.env.PORT;
