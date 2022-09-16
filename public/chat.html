@@ -12,19 +12,15 @@
             <div class="chat-header">
                 <h3>Add/Remove room:</h3>
                 <input type="text" id="room-id-new">
-                <input type="password" id="room-pass-new">
-                <a id="leave-button" class="button">Add Room</a>
-                <a id="join-button" class="button">Leave Room</a>
+                <input type="password" id="room-pass-new" value="">
+                <a id="join-button" class="button">Add Room</a>
+                <a id="leave-button" class="button">Leave Room</a>
             </div>
             <main class="chat-main">
                 <div class="chat-sidebar">
                     
                     <h3>Active rooms:</h3>
                     <select class="button" id="rooms">
-                        <option value="volvo">Volvo</option>
-                        <option value="saab">Saab</option>
-                        <option value="mercedes">Mercedes</option>
-                        <option value="audi">Audi</option>
                     </select>
                     <br></br>
                     <h3>Room ID:</h3>
@@ -49,6 +45,11 @@
                 </form>
             </div>
         </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.11.0/qs.min.js" 
+            integrity="sha512-/l6vieC+YxaZywUhmqs++8uF9DeMvJE61ua5g+UK0TuHZ4TkTgB1Gm1n0NiA86uEOM9JJ6JUwyR0hboKO0fCng==" 
+            crossorigin="anonymous" 
+            referrerpolicy="no-referrer">
+        </script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.js"></script>
         <script src="./js/chat.js"></script>
     </body>

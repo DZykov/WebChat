@@ -26,7 +26,7 @@ startChatBtn.addEventListener('click', async _ => {
     body: JSON.stringify(data)
     }).then(res => res.json()).then(data => {
       console.log(data);
-      window.location.replace('/chat?accessToken='+data['accessToken']+
+      window.location.replace('/chat?username='+user_name_value +'&accessToken='+data['accessToken']+
         '&refreshToken='+data['refreshToken']);
   }).catch(error => console.error('Error:', error));
 });

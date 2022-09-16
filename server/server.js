@@ -1,12 +1,18 @@
 const path = require('path');
 const http = require('http');
 const express = require('express');
-const session = require('express-session');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const mysql = require('mysql');
-const bcrypt = require("bcrypt")
-const jwt = require("jsonwebtoken")
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const formatMessage = require("./utils/messages");
+const {
+    create_room,
+    delete_room,
+    check_room,
+    enter_room
+  } = require("./utils/rooms");
 require("dotenv").config({path: `${__dirname}/.env`});
 
 const app = express();
@@ -196,8 +202,25 @@ app.get('/about', function(request, response) {
 
 // Polling with socket
 io.on('connection', socket => {
-    console.log("Connected")
-    console.log(socket.id)
+
+    socket.on('add_to_room', (room_id_value, room_pass_value, username) => {        
+        if(check_room(room_id_value)){
+            if(enter_room(room_id_value, room_pass_value)){
+                socket.join(room_id_value);
+                socket.emit('get_response', 'Connected!');
+                socket.emit('add_room', room_id_value);
+            } else{
+                socket.emit('get_response', 'Wrong password!');
+            }
+        } else {
+            create_room(room_id_value, room_pass_value);
+            socket.join(room_id_value);
+            socket.emit('get_response', 'Room was created!');
+            socket.emit('get_response', 'Connected!');
+            socket.emit('add_room', room_id_value);
+        }
+    });
+
 });
 
 const PORT = 3000 || process.env.PORT;
