@@ -6,6 +6,7 @@ const {username} = Qs.parse(location.search, {
 
 var max_select = 10;
 const rooms = [];
+const users = [];
 
 let room_id;
 let room_pass;
@@ -16,6 +17,7 @@ const select_win = document.querySelector('#rooms');
 const users_lst = document.querySelector('#users');
 const current_room = document.querySelector('#room-id');
 const chat_messages = document.querySelector('#chat-messages');
+const send_button = document.querySelector('#send-button');
 
 // socket functions + helpers
 socket.on('get_response', get_response);
@@ -29,12 +31,25 @@ function add_room(room){
 }
 
 socket.on('add_user', add_user);
-function add_user(room_id_value, username){
+function add_user(room_id_value, usernamef){
+    if(users.includes(usernamef)){
+        return;
+    }
+    users.push(usernamef);
     var li = document.createElement("li");
-    li.appendChild(document.createTextNode(username));
+    li.appendChild(document.createTextNode(usernamef));
     console.log(room_id_value+'_users')
     document.getElementsByClassName(room_id_value+'_users')[0].appendChild(li);
 }
+
+socket.on('delete_user', delete_user);
+function delete_user(room_id_value, usernamef){
+    var li = document.createElement("li");
+    li.appendChild(document.createTextNode(usernamef));
+    console.log(room_id_value+'_users')
+    document.getElementsByClassName(room_id_value+'_users')[0].appendChild(li);
+}
+
 
 socket.on('receive_message', receive_message);
 function receive_message(msg, room_id_value){
@@ -84,6 +99,14 @@ join_button.addEventListener('click', () => {
     users_lst.appendChild(divu);
 
     socket.emit('add_to_room', room_id_value, room_pass_value, username);
+});
+
+send_button.addEventListener('click', () => {
+    msg_field = document.querySelector('#msg');
+    message = msg_field.value;
+    msg_field.value = null;
+
+    socket.emit('send_message', room_id_value, username, message);
 });
 
 select_win.addEventListener('change', function handle_change(event){

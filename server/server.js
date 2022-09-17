@@ -226,11 +226,16 @@ io.on('connection', socket => {
     });
 
     socket.on('send_message', (room_id_value, username, msg) => {
-        io.to(room_id_value).emit('receive_message', formatMessage(username, msg));
+        if(msg === ''){
+            return;
+        }
+        io.to(room_id_value).emit('receive_message', formatMessage(username, msg), room_id_value);
+        io.to(room_id_value).emit('add_user', room_id_value, username);
     });
     
     socket.on('leave_room', (room_id_value, username) => {
         socket.leave(room_id_value);
+        io.to(room_id_value).emit('delete_user', room_id_value, username);
         io.to(room_id_value).emit('receive_message', formatMessage(username, 'left room!'), room_id_value);
     });
 });
