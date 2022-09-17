@@ -209,7 +209,7 @@ io.on('connection', socket => {
                 socket.join(room_id_value);
                 socket.emit('get_response', 'Connected!');
                 socket.emit('add_room', room_id_value);
-                io.to(room_id_value).emit('receive_message', username+'joined room!')
+                io.to(room_id_value).emit('receive_message', formatMessage(username, 'join room!'), room_id_value);
             } else{
                 socket.emit('get_response', 'Wrong password!');
             }
@@ -219,7 +219,7 @@ io.on('connection', socket => {
             socket.emit('get_response', 'Room was created!');
             socket.emit('get_response', 'Connected!');
             socket.emit('add_room', room_id_value);
-            io.to(room_id_value).emit('receive_message', username+'joined room!')
+            io.to(room_id_value).emit('receive_message', formatMessage(username, 'join room!'), room_id_value);
         }
     });
 
@@ -227,10 +227,10 @@ io.on('connection', socket => {
         var message = useranem+msg;
         io.to(room_id_value).emit('receive_message', message);
     });
-
+    //io.to(user.room).emit("message", formatMessage(user.username, msg));
     socket.on('leave_room', (room_id_value, username) => {
         socket.leave(room_id_value);
-        io.to(room_id_value).emit('receive_message', username+'left room!');
+        io.to(room_id_value).emit('receive_message', formatMessage(username, 'left room!'), room_id_value);
     });
 });
 

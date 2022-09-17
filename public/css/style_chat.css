@@ -81,7 +81,7 @@ a {
 .chat-messages .message {
 	padding: 10px;
 	margin-bottom: 15px;
-	background-color: gray;
+	background-color: rgb(233, 228, 228);
 	border-radius: 5px;
 	overflow-wrap: break-word;
 }
@@ -95,6 +95,7 @@ a {
 
 .chat-messages .message .meta span {
 	color: #777;
+	margin-left: 70%;
 }
 
 .chat-form-container {

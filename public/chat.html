@@ -14,7 +14,7 @@
                 <input type="text" id="room-id-new">
                 <input type="password" id="room-pass-new" value="">
                 <a id="join-button" class="button">Add Room</a>
-                <a id="leave-button" class="button">Leave Room</a>
+                
             </div>
             <main class="chat-main">
                 <div class="chat-sidebar">
@@ -22,27 +22,25 @@
                     <h3>Active rooms:</h3>
                     <select class="button" id="rooms">
                     </select>
+                    <a id="leave-button" class="button">Leave</a>
                     <br></br>
-                    <h3>Room ID:</h3>
-                    <h2 id="room-id"></h2>
 
                     <h3>Users:</h3>
                     <ul id="users"></ul>
 
                 </div>
-                <div class="chat-messages"></div>
+                <div class="chat-messages" id="chat-messages"></div>
             </main>
             <div class="chat-form-container">
-                <form id="chat-form">
-                    <input
+                <input
                     id="msg"
                     type="text"
                     placeholder="Enter Message"
                     required
                     autocomplete="off"
-                    />
-                    <button>Send</button>
-                </form>
+                    style="width: 87%;"
+                />
+                <a id="send-msg" class="button">Send</a>
             </div>
         </div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.11.0/qs.min.js" 
