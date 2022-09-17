@@ -210,6 +210,7 @@ io.on('connection', socket => {
                 socket.emit('get_response', 'Connected!');
                 socket.emit('add_room', room_id_value);
                 io.to(room_id_value).emit('receive_message', formatMessage(username, 'join room!'), room_id_value);
+                io.to(room_id_value).emit('add_user', room_id_value, username);
             } else{
                 socket.emit('get_response', 'Wrong password!');
             }
@@ -220,14 +221,14 @@ io.on('connection', socket => {
             socket.emit('get_response', 'Connected!');
             socket.emit('add_room', room_id_value);
             io.to(room_id_value).emit('receive_message', formatMessage(username, 'join room!'), room_id_value);
+            io.to(room_id_value).emit('add_user', room_id_value, username);
         }
     });
 
     socket.on('send_message', (room_id_value, username, msg) => {
-        var message = useranem+msg;
-        io.to(room_id_value).emit('receive_message', message);
+        io.to(room_id_value).emit('receive_message', formatMessage(username, msg));
     });
-    //io.to(user.room).emit("message", formatMessage(user.username, msg));
+    
     socket.on('leave_room', (room_id_value, username) => {
         socket.leave(room_id_value);
         io.to(room_id_value).emit('receive_message', formatMessage(username, 'left room!'), room_id_value);

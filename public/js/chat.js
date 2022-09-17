@@ -28,6 +28,14 @@ function add_room(room){
     rooms.push(room);
 }
 
+socket.on('add_user', add_user);
+function add_user(room_id_value, username){
+    var li = document.createElement("li");
+    li.appendChild(document.createTextNode(username));
+    console.log(room_id_value+'_users')
+    document.getElementsByClassName(room_id_value+'_users')[0].appendChild(li);
+}
+
 socket.on('receive_message', receive_message);
 function receive_message(msg, room_id_value){
     output_message(msg, room_id_value);
@@ -61,7 +69,6 @@ join_button.addEventListener('click', () => {
     
     hide_all_rooms();
 
-    const children_chat = chat_messages.childNodes;
     var opt = document.createElement('option');
     opt.value = room_id.value;;
     opt.innerHTML = room_id.value;;
@@ -70,7 +77,11 @@ join_button.addEventListener('click', () => {
     
     const div = document.createElement('div');
     div.classList.add(room_id.value);
-    document.querySelector('#chat-messages').appendChild(div);
+    chat_messages.appendChild(div);
+
+    const divu = document.createElement('ul'); // change
+    divu.classList.add(room_id.value+'_users'); // users list )
+    users_lst.appendChild(divu);
 
     socket.emit('add_to_room', room_id_value, room_pass_value, username);
 });
@@ -79,12 +90,17 @@ select_win.addEventListener('change', function handle_change(event){
     var active_room = select_win.options[select_win.selectedIndex].value;
     hide_all_rooms();
     document.getElementsByClassName(active_room)[0].style.display = '';
+    document.getElementsByClassName(active_room+'_users')[0].style.display = '';
 });
 
 // helpers
 function hide_all_rooms(){
     const childern = chat_messages.childNodes;
     childern.forEach(div => {
+        div.style.display = 'none';
+    });
+    const childern_users = users_lst.childNodes;
+    childern_users.forEach(div => {
         div.style.display = 'none';
     });
 }
