@@ -11,7 +11,10 @@ const {
     create_room,
     delete_room,
     check_room,
-    enter_room
+    enter_room,
+    add_user,
+    delete_user,
+    get_users
   } = require("./utils/rooms");
 require("dotenv").config({path: `${__dirname}/.env`});
 
@@ -209,8 +212,10 @@ io.on('connection', socket => {
                 socket.join(room_id_value);
                 socket.emit('get_response', 'Connected!');
                 socket.emit('add_room', room_id_value);
-                io.to(room_id_value).emit('receive_message', formatMessage(username, 'join room!'), room_id_value);
+                io.to(room_id_value).emit('receive_message', formatMessage(username, 'Join room!'), room_id_value);
                 io.to(room_id_value).emit('add_user', room_id_value, username);
+                io.to(socket.id).emit('receive_all_users', room_id_value, get_users(room_id_value));
+                add_user(room_id_value, username);
             } else{
                 socket.emit('get_response', 'Wrong password!');
             }
@@ -220,8 +225,11 @@ io.on('connection', socket => {
             socket.emit('get_response', 'Room was created!');
             socket.emit('get_response', 'Connected!');
             socket.emit('add_room', room_id_value);
-            io.to(room_id_value).emit('receive_message', formatMessage(username, 'join room!'), room_id_value);
+            io.to(room_id_value).emit('receive_message', formatMessage(username, `Created room ${room_id_value}!`), room_id_value);
+            io.to(room_id_value).emit('receive_message', formatMessage(username, 'Join room!'), room_id_value);
             io.to(room_id_value).emit('add_user', room_id_value, username);
+            io.to(socket.id).emit('receive_all_users', room_id_value, get_users(room_id_value));
+            add_user(room_id_value, username);
         }
     });
 
@@ -234,9 +242,18 @@ io.on('connection', socket => {
     });
     
     socket.on('leave_room', (room_id_value, username) => {
-        socket.leave(room_id_value);
+        delete_user(room_id_value, username);
         io.to(room_id_value).emit('delete_user', room_id_value, username);
         io.to(room_id_value).emit('receive_message', formatMessage(username, 'left room!'), room_id_value);
+        
+        const clients = io.sockets.adapter.rooms.get('Room Name');
+        const num_clients = clients ? clients.size : 0;
+        if(num_clients == 0){
+            delete_room(room_id_value);
+        }
+
+        io.to(socket.id).emit('leave_room_client', room_id_value);
+        socket.leave(room_id_value);
     });
 });
 

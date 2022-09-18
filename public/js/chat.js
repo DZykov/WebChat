@@ -38,18 +38,42 @@ function add_user(room_id_value, usernamef){
     users.push(usernamef);
     var li = document.createElement("li");
     li.appendChild(document.createTextNode(usernamef));
-    console.log(room_id_value+'_users')
     document.getElementsByClassName(room_id_value+'_users')[0].appendChild(li);
+}
+
+socket.on('receive_all_users', receive_all_users);
+function receive_all_users(room_id_value, users_l){
+    var arrayLength = users_l.length;
+    for (var i = 0; i < arrayLength; i++) {
+        if(users.includes(users_l[i])){
+            return;
+        }
+        users.push(users_l[i]);
+        var li = document.createElement("li");
+        li.appendChild(document.createTextNode(users_l[i]));
+        document.getElementsByClassName(room_id_value+'_users')[0].appendChild(li);
+    }
 }
 
 socket.on('delete_user', delete_user);
 function delete_user(room_id_value, usernamef){
-    var li = document.createElement("li");
-    li.appendChild(document.createTextNode(usernamef));
-    console.log(room_id_value+'_users')
-    document.getElementsByClassName(room_id_value+'_users')[0].appendChild(li);
+    var lis = document.getElementsByClassName(room_id_value+'_users')[0].childNodes;
+    for(var i=0; li=lis[i]; i++) {
+        if(li.outerText===usernamef){
+            li.parentNode.removeChild(li);
+        }
+    }
 }
 
+socket.on('leave_room_client', leave_room_client);
+function leave_room_client(room_id_value){
+    var lis = select_win.childNodes;
+    for(var i=0; li=lis[i]; i++) {
+        if(li.value===room_id_value){
+            li.parentNode.removeChild(li);
+        }
+    }
+}
 
 socket.on('receive_message', receive_message);
 function receive_message(msg, room_id_value){
@@ -99,6 +123,12 @@ join_button.addEventListener('click', () => {
     users_lst.appendChild(divu);
 
     socket.emit('add_to_room', room_id_value, room_pass_value, username);
+    document.querySelector('#room-id-new').value = '';
+});
+
+leave_button.addEventListener('click', () =>{
+    var active_room = select_win.options[select_win.selectedIndex].value;
+    socket.emit('leave_room', active_room, username);
 });
 
 send_button.addEventListener('click', () => {
