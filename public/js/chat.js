@@ -1,5 +1,9 @@
 const socket = io('localhost:3000');
 
+var {username} = Qs.parse(location.search, {
+    ignoreQueryPrefix: true,
+});
+
 var {accessToken} = Qs.parse(location.search, {
     ignoreQueryPrefix: true,
 });
@@ -52,6 +56,29 @@ function get_response(data){
 socket.on('add_room', add_room);
 function add_room(room){
     rooms.push(room);
+
+    room_id = document.querySelector('#room-id-new');
+    room_pass = document.querySelector('#room-pass-new');
+    room_id_value = room_id.value;
+    room_pass_value = room_pass.value;
+
+    hide_all_rooms();
+
+    var opt = document.createElement('option');
+    opt.value = room_id.value;
+    opt.innerHTML = room_id.value;
+    select_win.appendChild(opt);
+    select_win.value = room_id.value;
+    
+    const div = document.createElement('div');
+    div.classList.add(room_id.value);
+    chat_messages.appendChild(div);
+
+    const divu = document.createElement('ul'); // change
+    divu.classList.add(room_id.value+'_users'); // users list )
+    users_lst.appendChild(divu);
+    document.querySelector('#room-id-new').value = '';
+    document.querySelector('#room-pass-new').value = '';
 }
 
 socket.on('add_user', add_user);
@@ -146,25 +173,8 @@ join_button.addEventListener('click', () => {
     if(rooms.includes(room_id_value)){
         return;
     }
-    
-    hide_all_rooms();
-
-    var opt = document.createElement('option');
-    opt.value = room_id.value;
-    opt.innerHTML = room_id.value;
-    select_win.appendChild(opt);
-    select_win.value = room_id.value;
-    
-    const div = document.createElement('div');
-    div.classList.add(room_id.value);
-    chat_messages.appendChild(div);
-
-    const divu = document.createElement('ul'); // change
-    divu.classList.add(room_id.value+'_users'); // users list )
-    users_lst.appendChild(divu);
 
     socket.emit('add_to_room', room_id_value, room_pass_value, username);
-    document.querySelector('#room-id-new').value = '';
 });
 
 leave_button.addEventListener('click', () =>{
