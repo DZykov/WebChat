@@ -272,5 +272,5 @@ io.on('connection', socket => {
 });
 
 server.listen(3000 || process.env.PORT, () => {
-    console.log(`Our app is running on port ${ PORT }`);
+    console.log('Server is running!');
 });
