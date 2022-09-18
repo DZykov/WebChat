@@ -1,4 +1,4 @@
-const socket = io('localhost:3000');
+const socket = io('https://web-chat-with-authrooms.herokuapp.com/');
 
 var {username} = Qs.parse(location.search, {
     ignoreQueryPrefix: true,
