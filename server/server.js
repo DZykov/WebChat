@@ -144,13 +144,13 @@ app.post("/login", (req, res)=> {
 // login tokens
 // accessToken
 function generateAccessToken(user) {
-    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: "15m"});
+    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: "60m"});
 }
 
 // refreshToken
 let refreshTokens = []; // change for redis or other dic server lib
 function generateRefreshToken(user) {
-    const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, {expiresIn: "20m"});
+    const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, {expiresIn: "65m"});
     refreshTokens.push(refreshToken)
     return refreshToken;
 }
@@ -214,7 +214,7 @@ io.on('connection', socket => {
                 socket.emit('add_room', room_id_value);
                 io.to(room_id_value).emit('receive_message', formatMessage(username, 'Join room!'), room_id_value);
                 io.to(room_id_value).emit('add_user', room_id_value, username);
-                io.to(socket.id).emit('receive_all_users', room_id_value, get_users(room_id_value));
+                io.to(room_id_value).emit('receive_all_users', room_id_value, get_users(room_id_value));
                 add_user(room_id_value, username);
             } else{
                 socket.emit('get_response', 'Wrong password!');
@@ -242,18 +242,18 @@ io.on('connection', socket => {
     });
     
     socket.on('leave_room', (room_id_value, username) => {
+        io.to(socket.id).emit('leave_room_client', room_id_value, get_users(room_id_value));
         delete_user(room_id_value, username);
         io.to(room_id_value).emit('delete_user', room_id_value, username);
         io.to(room_id_value).emit('receive_message', formatMessage(username, 'left room!'), room_id_value);
         
-        const clients = io.sockets.adapter.rooms.get('Room Name');
-        const num_clients = clients ? clients.size : 0;
+        const clients = io.sockets.adapter.rooms.get(room_id_value);
+        const num_clients = clients.size;
+        socket.leave(room_id_value);
         if(num_clients == 0){
             delete_room(room_id_value);
         }
 
-        io.to(socket.id).emit('leave_room_client', room_id_value);
-        socket.leave(room_id_value);
     });
 });
 

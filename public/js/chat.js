@@ -6,7 +6,7 @@ const {username} = Qs.parse(location.search, {
 
 var max_select = 10;
 const rooms = [];
-const users = [];
+var users = [];
 
 let room_id;
 let room_pass;
@@ -45,18 +45,24 @@ socket.on('receive_all_users', receive_all_users);
 function receive_all_users(room_id_value, users_l){
     var arrayLength = users_l.length;
     for (var i = 0; i < arrayLength; i++) {
-        if(users.includes(users_l[i])){
-            return;
+        if(!users.includes(users_l[i])){
+            users.push(users_l[i]);
+            var li = document.createElement("li");
+            li.appendChild(document.createTextNode(users_l[i]));
+            document.getElementsByClassName(room_id_value+'_users')[0].appendChild(li);
         }
-        users.push(users_l[i]);
-        var li = document.createElement("li");
-        li.appendChild(document.createTextNode(users_l[i]));
-        document.getElementsByClassName(room_id_value+'_users')[0].appendChild(li);
     }
 }
 
 socket.on('delete_user', delete_user);
 function delete_user(room_id_value, usernamef){
+    if(document.getElementsByClassName(room_id_value+'_users')[0]===undefined){
+        return;
+    }
+    const index = users.indexOf(usernamef);
+    if (index > -1) {
+        users.splice(index, 1);
+    }
     var lis = document.getElementsByClassName(room_id_value+'_users')[0].childNodes;
     for(var i=0; li=lis[i]; i++) {
         if(li.outerText===usernamef){
@@ -66,13 +72,21 @@ function delete_user(room_id_value, usernamef){
 }
 
 socket.on('leave_room_client', leave_room_client);
-function leave_room_client(room_id_value){
+function leave_room_client(room_id_value, users_l){
     var lis = select_win.childNodes;
     for(var i=0; li=lis[i]; i++) {
         if(li.value===room_id_value){
             li.parentNode.removeChild(li);
         }
     }
+    const index = rooms.indexOf(room_id_value);
+    if (index > -1) {
+        rooms.splice(index, 1);
+    }
+    users = users.filter( ( el ) => !users_l.includes( el ) );
+    var lis = document.getElementsByClassName(room_id_value+'_users')[0];
+    lis.parentNode.removeChild(lis);
+    chat_messages.removeChild(document.getElementsByClassName(room_id_value)[0]);
 }
 
 socket.on('receive_message', receive_message);
@@ -81,6 +95,9 @@ function receive_message(msg, room_id_value){
     chat_messages.scrollTop = chat_messages.scrollHeight;
 }
 function output_message(message, room_id_value) {
+    if(document.getElementsByClassName(room_id_value)[0]===undefined){
+        return;
+    }
     const div = document.createElement('div');
     div.classList.add('message');
     const p = document.createElement('p');
