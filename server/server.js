@@ -16,7 +16,8 @@ const {
     delete_user,
     get_users
   } = require("./utils/rooms");
-require("dotenv").config({path: `${__dirname}/.env`});
+  ACCESS_TOKEN_SECRET = '3e9af42de397cfc9387a06972c28c23a1ac7e9a60fb6dc1f05295bc6057baf500672d4a13db5d04ea84bbc4c5679164a7723f3d49f516bb73dc3df6e3b768c8e';
+  REFRESH_TOKEN_SECRET = '56a6d157ad7d2ee09e480960ae857e528ae546d156f47433b1afad162311c45aa520697b65d13a5c72891f6145ab1f2675886fc124027dc95f86073dd8fe1462';
 
 const app = express();
 
@@ -144,13 +145,13 @@ app.post("/login", (req, res)=> {
 // login tokens
 // accessToken
 function generateAccessToken(user) {
-    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: "60m"});
+    return jwt.sign(user, ACCESS_TOKEN_SECRET, {expiresIn: "60m"});
 }
 
 // refreshToken
 let refreshTokens = []; // change for redis or other dic server lib
 function generateRefreshToken(user) {
-    const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, {expiresIn: "65m"});
+    const refreshToken = jwt.sign(user, REFRESH_TOKEN_SECRET, {expiresIn: "65m"});
     refreshTokens.push(refreshToken)
     return refreshToken;
 }
@@ -188,7 +189,7 @@ function validateToken(req, res, token){
     if (token == null){
         res.status(400).send("Token not present");
     } else {
-        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+        jwt.verify(token, ACCESS_TOKEN_SECRET, (err, user) => {
             if (err) { 
                 res.status(403).send("Token is invalid");
             } else {
