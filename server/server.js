@@ -22,6 +22,7 @@ const {
 const app = express();
 
 // app itself
+app.set('port', (process.env.PORT || 3000));
 app.use(express.json());
 app.use(express.static(path.join("public")));
 app.use(cors());
