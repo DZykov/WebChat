@@ -1,5 +1,5 @@
 # WebChat
-    Small webchat with user authentication, public and private rooms.
+Small webchat with user authentication, public and private rooms.
 
 
 ## Index
