@@ -272,7 +272,7 @@ io.on('connection', socket => {
 });
 
 const PORT = 3000 || process.env.PORT;
-
+console.log(process.env.PORT)
 
 server.listen(PORT, () => {
     console.log(`Our app is running on port ${ PORT }`);
