@@ -9,12 +9,11 @@ Small webchat with user authentication, public and private rooms.
    - [To-Do and Issues](#To-Do-and-Issues "Goto ToDo-and-Issues")
 
 ## Demo
-
 ![alt text](https://github.com/DZykov/WebChat/blob/master/img/login.png)
-
 ![alt text](https://github.com/DZykov/WebChat/blob/master/img/chat1.png)
-
 ![alt text](https://github.com/DZykov/WebChat/blob/master/img/chat2.png)
+
+Video sample:
 
 https://user-images.githubusercontent.com/38252337/190914872-13e0f374-094f-4947-9c33-79764f4a6130.mp4
 
