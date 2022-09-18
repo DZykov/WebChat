@@ -49,11 +49,11 @@ const io = new Server(server, {
 // db
 const db = mysql.createPool({
     connectionLimit: 100,
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "mydb",
-    port: "3306" // port name, "3306" by default
+    host    : 'us-cdbr-east-06.cleardb.net',
+    user    : 'b35af2c5b67476',
+    password: 'd796343f',
+    database: 'heroku_f8077d9e94ba5f1'
+    //port: "3306" // port name, "3306" by default
  });
  
  db.getConnection( (err, connection)=> {   if (err) throw (err)
