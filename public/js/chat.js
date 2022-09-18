@@ -1,8 +1,32 @@
 const socket = io('localhost:3000');
 
-const {username} = Qs.parse(location.search, {
+var {accessToken} = Qs.parse(location.search, {
     ignoreQueryPrefix: true,
-  });
+});
+
+var {refreshToken} = Qs.parse(location.search, {
+    ignoreQueryPrefix: true,
+});
+
+var start = Date.now();
+setInterval(function() {
+    var delta = Date.now() - start; // milliseconds elapsed since start
+    var t = Math.floor(delta / 1000);
+    if(t==3600){
+      socket.emit('refresh_token', refreshToken, accessToken);
+      start = Date.now();
+    }
+}, 1000);
+
+socket.on('get_token', get_token);
+function get_token(data){
+    if(data==='error'){
+        alert(data);
+    } else {
+        accessToken = data['accessToken'];
+        refreshToken = data['refreshToken'];
+    }
+}
 
 var max_select = 10;
 const rooms = [];
@@ -126,10 +150,10 @@ join_button.addEventListener('click', () => {
     hide_all_rooms();
 
     var opt = document.createElement('option');
-    opt.value = room_id.value;;
-    opt.innerHTML = room_id.value;;
+    opt.value = room_id.value;
+    opt.innerHTML = room_id.value;
     select_win.appendChild(opt);
-    select_win.value = room_id.value;;
+    select_win.value = room_id.value;
     
     const div = document.createElement('div');
     div.classList.add(room_id.value);

@@ -166,7 +166,7 @@ app.post("/refreshToken", (req,res) => {
     const n_accessToken = generateAccessToken ({user: req.body.name});
     const n_refreshToken = generateRefreshToken ({user: req.body.name});
     //generate new accessToken and refreshTokens
-    res.json({accessToken: n_accessToken, refreshToken: n_refreshToken});
+    res.json({'accessToken': n_accessToken, 'refreshToken': n_refreshToken});
 });
 
 app.delete("/logout", (req,res) => {
@@ -253,8 +253,21 @@ io.on('connection', socket => {
         if(num_clients == 0){
             delete_room(room_id_value);
         }
-
     });
+
+    socket.on('refresh_token', (refreshTokenO, accessTokenO) => {
+        var accessToken = accessTokenO;
+        var refreshToken = refreshTokenO;
+        if (!refreshTokens.includes(refreshToken)) 
+            socket.emit('get_token', 'error')
+        refreshTokens = refreshTokens.filter( (c) => c != refreshToken);
+        //remove the old refreshToken from the refreshTokens list
+        const n_accessToken = generateAccessToken ({user: req.body.name});
+        const n_refreshToken = generateRefreshToken ({user: req.body.name});
+        //generate new accessToken and refreshTokens
+        socket.emit('get_token', {'accessToken': n_accessToken, 'refreshToken': n_refreshToken});
+    });
+
 });
 
 const PORT = 3000 || process.env.PORT;
